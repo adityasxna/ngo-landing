@@ -5,7 +5,13 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-const client = globalThis.prisma ?? new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = client
+// Only create Prisma client if DATABASE_URL exists
+const client = process.env.DATABASE_URL 
+  ? (globalThis.prisma ?? new PrismaClient())
+  : null
 
-export const prisma = client
+if (process.env.NODE_ENV !== 'production' && client) {
+  globalThis.prisma = client
+}
+
+export const prisma = client as PrismaClient
